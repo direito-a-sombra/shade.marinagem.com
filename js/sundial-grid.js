@@ -112,6 +112,7 @@ function calculateLeftArea(q, p, ta, tb) {
 
 const elSundialGrid = document.getElementById("sundial-grid-container");
 
+const elSundialCity = document.getElementById("sundial-grid-city");
 const elSundialMonthMin = document.getElementById("sundial-grid-month-min");
 const elSundialMonthMax = document.getElementById("sundial-grid-month-max");
 const elSundialMonthStep = document.getElementById("sundial-grid-month-step");
@@ -152,8 +153,10 @@ const [STEPMIN, STEPMAX] = [1, 12];
 const [PMIN, PMAX] = [0.0, 1.0];
 const MONTHS = ["", "jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
 
-function renderGrid() {
+async function renderGrid() {
   const [y, d, mm] = [2026, 1, 0];
+  const { cityName, latDeg, lonDeg, tzOffHr } = await getCityLatLon(elSundialCity.value);
+  elSundialCity.value = cityName;
 
   const poleH = Number(elPole.value);
   const abar = clamp(Number(elAbar.value), 0.0, 1.0);
@@ -203,7 +206,7 @@ function renderGrid() {
       elGridPlot.style.width = `${100 / mCnt}%`;
       elGridRow.appendChild(elGridPlot);
 
-      const out = computeAlphaBeta(y, m, d, hh, mm, poleH);
+      const out = computeAlphaBeta(y, m, d, hh, mm, poleH, latDeg, lonDeg, tzOffHr);
       if (!isFinite(out.alpha_rad) || !isFinite(out.beta_rad)) continue;
 
       const ta = Math.tan(out.alpha_rad);
@@ -252,6 +255,7 @@ document.addEventListener('DOMContentLoaded', () => {
   elUpdateBtn.addEventListener("click", renderGrid);
 
   [
+    elSundialCity,
     elSundialMonthMin,
     elSundialMonthMax,
     elSundialMonthStep,

@@ -24,11 +24,11 @@ function nowTime(utcOffset) {
   const utcStr = (new Date(utc)).toISOString().split("T")[1].split(":");
   return `${utcStr[0]}:${utcStr[1]}`;
 }
-UI.date.value = todayStr(TZ_OFFSET_HOURS);
-UI.time.value = nowTime(TZ_OFFSET_HOURS);
+UI.date.value = todayStr(FORTALEZA.TZ_OFFSET_HOURS);
+UI.time.value = nowTime(FORTALEZA.TZ_OFFSET_HOURS);
 
 function readLocalParts() {
-  const d = UI.date.value ? UI.date.value : todayStr(TZ_OFFSET_HOURS);
+  const d = UI.date.value ? UI.date.value : todayStr(FORTALEZA.TZ_OFFSET_HOURS);
   const [Y, M, D] = d.split("-").map(n => parseInt(n));
   const [hh, mm] = (UI.time.value || "12:00").split(":").map(n => parseInt(n));
   return { Y, M, D, hh, mm };
@@ -153,7 +153,7 @@ function update() {
   setPole(h);
 
   const { Y, M, D, hh, mm } = readLocalParts();
-  const sp = solarAzElNoaa(Y, M, D, hh, mm, 0, LAT_DEG, LON_DEG, TZ_OFFSET_HOURS);
+  const sp = solarAzElNoaa(Y, M, D, hh, mm, 0, FORTALEZA.LAT_DEG, FORTALEZA.LON_DEG, FORTALEZA.TZ_OFFSET_HOURS);
 
   const elR = sp.elevation_deg * Math.PI / 180;
   const azR = sp.azimuth_deg * Math.PI / 180;

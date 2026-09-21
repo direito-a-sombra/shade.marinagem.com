@@ -1,9 +1,13 @@
 // ----------------------------
 // Fixed location: Fortaleza
 // ----------------------------
-const LAT_DEG = -3.731862;  //  -3° 43' 54.70"
-const LON_DEG = -38.526669; // -38° 31' 36.01"
-const TZ_OFFSET_HOURS = -3.0; // Fortaleza (UTC-3)
+const FORTALEZA = {
+  NAME: "Fortaleza",
+  IANA: "America/Fortaleza",
+  LAT_DEG: -3.731862,  //  -3° 43' 54.70"
+  LON_DEG: -38.526669, // -38° 31' 36.01"
+  TZ_OFFSET_HOURS: -3.0, // Fortaleza (UTC-3)
+};
 
 const D_OBS = 3.0; // observer distance to pole (m)
 const EYE_H = 1.5; // eye height (m)
@@ -110,9 +114,9 @@ function solarAzElNoaa(localY, localM, localD, localHH, localMM, localSS, latDeg
 // ----------------------------
 // alpha/beta model (same as Python)
 // ----------------------------
-function computeAlphaBeta(localY, localM, localD, localHH, localMM, hPole) {
+function computeAlphaBeta(localY, localM, localD, localHH, localMM, hPole, latDeg=FORTALEZA.LAT_DEG, lonDeg=FORTALEZA.LON_DEG, tzOff=FORTALEZA.TZ_OFFSET_HOURS) {
   const { azimuth_deg: Adeg, elevation_deg: Edeg } =
-    solarAzElNoaa(localY, localM, localD, localHH, localMM, 0, LAT_DEG, LON_DEG, TZ_OFFSET_HOURS);
+    solarAzElNoaa(localY, localM, localD, localHH, localMM, 0, latDeg, lonDeg, tzOff);
 
   if (Edeg <= 0) {
     return {
@@ -172,4 +176,46 @@ function abarGrid(qVals, pVals, ta, tb) {
     z[i] = row;
   }
   return z;
+}
+
+function getUtcOffset(timeZone, date = new Date()) {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone,
+    timeZoneName: "longOffset",
+  }).formatToParts(date);
+
+  const offset = parts.find(p => p.type === "timeZoneName")?.value;
+
+  if (offset === "GMT") return 0;
+
+  const match = offset.match(/^GMT([+-])(\d{2}):(\d{2})$/);
+  if (!match) throw new Error(`Could not parse offset: ${offset}`);
+
+  const [, sign, hours, minutes] = match;
+
+  return (
+    (sign === '+' ? 1 : -1) *
+    (Number(hours) * 60 + Number(minutes)) / 60
+  );
+}
+
+const METEO_COORD_URL = "https://geocoding-api.open-meteo.com/v1/search";
+async function getCityLatLon(cityName) {
+  const params = {
+    name: cityName,
+    count: 10,
+    language: "en",
+    format: "json"
+  };
+
+  const queryString = new URLSearchParams(params).toString();
+  const mRes = await fetch(`${METEO_COORD_URL}?${queryString}`);
+  const cityData = await mRes.json();
+
+  return {
+    cityName: cityData?.results?.[0]?.name ?? FORTALEZA.NAME,
+    latDeg: cityData?.results?.[0]?.latitude ?? FORTALEZA.LAT_DEG,
+    lonDeg: cityData?.results?.[0]?.longitude ?? FORTALEZA.LON_DEG,
+    tzOffHr: getUtcOffset(cityData?.results?.[0]?.timezone ?? FORTALEZA.IANA),
+  }
 }

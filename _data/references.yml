@@ -27,3 +27,7 @@ publications:
     year: 2016
     where: NYT
     url: https://www.nytimes.com/interactive/2016/12/21/upshot/Mapping-the-Shadows-of-New-York-City.html
+  - title: "Meet the Conservationist Who Turned 40 Terabytes of Public Data Into a Video Game"
+    year: 2026
+    where: "exe.dev"
+    url: https://blog.exe.dev/meet-the-conservationist-who-turned-40-terabytes-of-government-data-into-a-video-game
