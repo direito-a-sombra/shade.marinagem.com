@@ -1,0 +1,35 @@
+name: Publish to GH Pages
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Push to gh-pages
+      run: |
+        GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c 1-8)
+        COMMIT_MSG=${{ github.ref_name }}-$(git log --format=%h -1)
+
+        git config --unset-all http.https://github.com/.extraheader
+        git config --local user.name "github-actions[bot]"
+        git config --local user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+        git remote add shade https://thiagohersan:${{ secrets.PUSH_TOKEN }}@github.com/direito-a-sombra/shade.marinagem.com.git
+        echo "shade.marinagem.com" > CNAME
+        git add CNAME
+        git rm -rf .github/
+        git commit -m $COMMIT_MSG
+        git push -f shade main
+
+
+# IF NEEDED:
+# sed -i -e 's/\.\.\/\.\.\/imgs/\.\.\/imgs/g' test/index.html
