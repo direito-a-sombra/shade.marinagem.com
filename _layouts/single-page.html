@@ -7,13 +7,9 @@
   </head>
   <body class="slider-body">
     {% include top-nav.html %}
-    {% if page.url contains "pt" %}
-      {% include text-nav_pt.html %}
-    {% else %}
-      {% include text-nav.html %}
-    {% endif %}
+    {% include {{ LANG }}/text-nav.html %}
     <div id="page" class="slider-page">
-      {{ content }}
+      {% include home_panels.html %}
     </div>
     <script src="{{ 'js/main.js' | relative_url }}"></script>
   </body>

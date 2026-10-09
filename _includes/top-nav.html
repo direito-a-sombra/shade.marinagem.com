@@ -1,6 +1,6 @@
 <div class="nav-container">
   <div class="nav-button-container">
-    {% for pname in site.data.pages %}
+    {% for pname in site.data.pages[LANG] %}
       {% assign panel_idx = forloop.index0 %}
       <a class="nav-link" href="#" data-panel-index="{{ panel_idx }}" data-panel-label="{{ pname }}" aria-label="Go to {{ pname }}"></a>
     {% endfor %}

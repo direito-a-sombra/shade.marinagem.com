@@ -1,8 +1,19 @@
-- home
-- sundial
-- bus
-- exhibition
-- maps
-- game
-- about
-- process
+en:
+  - home
+  - sundial
+  - bus
+  - exhibition
+  - maps
+  - game
+  - about
+  - process
+
+pt:
+  - inicio
+  - relogio
+  - onibus
+  - exposicao
+  - mapas
+  - game
+  - sobre
+  - processo
